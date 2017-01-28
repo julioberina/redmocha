@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
              "gdxlibs/gdx-natives.jar",
              "gdxlibs/gdx-sources.jar",
              "gdxlibs/gdx-tools.jar",
-             "gdx/gdx.jar"
+             "gdxlibs/gdx.jar"
             ]
   s.homepage = "http://rubygems.org/gems/redmocha"
   s.license = "MIT"
