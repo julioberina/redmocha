@@ -1,5 +1,7 @@
+$LOAD_PATH.unshift File.expand_path("gdxlibs")
+
 require "java"
-Dir["gdxlibs/\*.jar"].each { |jar| require jar }
+Dir["\*.jar"].each { |jar| require jar.sub("gdxlibs/", "") }
 
 java_import com.badlogic.gdx.Gdx
 java_import com.badlogic.gdx.Game
