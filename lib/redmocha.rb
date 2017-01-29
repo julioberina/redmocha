@@ -1,7 +1,20 @@
-require_relative "util/initjars"
+require "java"
+Dir["gdxlibs/\*.jar"].each { |jar| require jar }
 
-class RedMocha
-  def self.status
-    puts "Currently under development"
+java_import com.badlogic.gdx.Gdx
+java_import com.badlogic.gdx.Game
+java_import com.badlogic.gdx.graphics.GL20
+
+class RedMocha < Game
+  attr_accessor :title, :width, :height
+  
+  def initialize(title = "RedMocha Game", width = 800, height = 600)
+    @title = title
+    @width = width
+    @height = height
+  end
+
+  def run
+    LwjglApplication.new(self, @title, @width, @height, true)
   end
 end
