@@ -1,22 +1,44 @@
-$LOAD_PATH.unshift File.expand_path("gdxlibs")
+path = File.expand_path(File.dirname(__FILE__))
+$LOAD_PATH.unshift path
 
 require "java"
-Dir["gdxlibs/\*.jar"].each { |jar| require jar.sub("gdxlibs/", "") }
+Dir["#{path}/gdxlibs/\*.jar"].each do |jar|
+  require jar.sub("#{path}/", "")
+end
 
-java_import com.badlogic.gdx.Gdx
-java_import com.badlogic.gdx.Game
-java_import com.badlogic.gdx.graphics.GL20
+Dir["#{path}/includes/\*.rb"].each do |rb|
+  require_relative rb.sub("#{path}/", "").sub(".rb", "")
+end
 
-class RedMocha < Game
-  attr_accessor :title, :width, :height
+def rm_import(klass)
   
+end
+
+def rm_include(interface)
+  
+end
+
+class RMScreen
+  include RedMocha::Screen
+  
+  def initialize(game = nil)
+    @game = game
+  end
+end
+
+class RMGame < RedMocha::Game
+  attr_accessor :title, :width, :height
+
   def initialize(title = "RedMocha Game", width = 800, height = 600)
     @title = title
     @width = width
     @height = height
   end
 
+  def create
+  end
+
   def run
-    LwjglApplication.new(self, @title, @width, @height, true)
+    LwjglApplication.new(self, @title, @width, @height)
   end
 end

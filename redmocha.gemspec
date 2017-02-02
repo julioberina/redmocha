@@ -1,14 +1,15 @@
 Gem::Specification.new do |s|
   s.name = "redmocha"
-  s.version = "0.1.0"
+  s.version = "0.3.2"
   s.date = "2017-01-19"
   s.description = "A JRuby wrapper for the Java game framework LibGDX"
   s.summary = "JRuby wrapper for LibGDX"
   s.authors = ["Julio Berina"]
-  s.require_paths = "lib"
+  s.require_paths = ["lib", "lib/gdxlibs", "lib/includes"]
   s.platform = "java"
   s.email = "julioberina@gmail.com"
   s.files = ["lib/redmocha.rb",
+             "lib/includes/core.rb",
              "lib/gdxlibs/gdx-backend-lwjgl-natives.jar",
              "lib/gdxlibs/gdx-backend-lwjgl.jar",
              "lib/gdxlibs/gdx-natives.jar",
