@@ -10,6 +10,12 @@ class String
     tr("-", "_").
     downcase
   end
+
+  def hungarian
+    # takes underscore string
+    words = self.split("_")
+    words.map { |w| if w == words.first then w else w.capitalize end }.join("")
+  end
 end
 
 Dir["#{path}/gdxlibs/\*.jar"].each do |jar|
@@ -88,8 +94,12 @@ class RMGame < com.badlogic.gdx.Game
     @font.dispose unless @font.nil?
   end
 
-  def run
-    com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, @title, @width, @height)
+  def run(config = nil)
+    if config.nil?
+      com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, @title, @width, @height)
+    else
+      com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, config)
+    end
   end
 
   protected
@@ -98,5 +108,46 @@ class RMGame < com.badlogic.gdx.Game
     @title = title
     @width = width
     @height = height
+  end
+end
+
+class RMAdapter < com.badlogic.gdx.ApplicationAdapter
+  def create
+    @batch = com.badlogic.gdx.graphics.g2d.SpriteBatch.new
+  end
+
+  def pause
+  end
+
+  def dispose
+    @batch.dispose
+  end
+
+  def render
+    @batch.begin
+    com.badlogic.gdx.Gdx.glClearColor(0.0, 0.0, 0.0, 1.0)
+    com.badlogic.gdx.Gdx.glClear(com.badlogic.gdx.graphics.GL20::GL_COLOR_BUFFER_BIT)
+    @batch.end
+  end
+
+  def resize(width, height)
+  end
+
+  def resume
+  end
+
+  def run(config = nil)
+    
+  end
+end
+
+class RMConfig
+  def initialize
+    @config = LwjglApplicationConfiguration.new
+  end
+  
+  def method_missing(name, *args)
+    func = name.to_s.underscore.hungarian
+    if args.empty? then eval "@config.#{func}" else eval "@config.#{func} = #{args.first}" end
   end
 end
