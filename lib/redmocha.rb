@@ -47,11 +47,14 @@ class RMScreen
 
   protected
 
-  def render(delta)
+  def clear
     com.badlogic.gdx.Gdx.gl.glClearColor(0.0, 0.0, 0.0, 1.0)
     com.badlogic.gdx.Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20::GL_COLOR_BUFFER_BIT)
+  end
 
+  def render(delta)
     @game.batch.begin
+    clear
     @game.font.draw(@game.batch, "RedMocha beats white mocha fam!", 20, 20)
     @game.batch.end
   end
@@ -112,8 +115,13 @@ class RMGame < com.badlogic.gdx.Game
 end
 
 class RMAdapter < com.badlogic.gdx.ApplicationAdapter
-  def create
+  attr_accessor :title, :width, :height
+  
+  def create(title = "RedMocha Game", width = 800, height = 600)
     @batch = com.badlogic.gdx.graphics.g2d.SpriteBatch.new
+    @title = title
+    @width = width
+    @height = height
   end
 
   def pause
@@ -125,8 +133,7 @@ class RMAdapter < com.badlogic.gdx.ApplicationAdapter
 
   def render
     @batch.begin
-    com.badlogic.gdx.Gdx.glClearColor(0.0, 0.0, 0.0, 1.0)
-    com.badlogic.gdx.Gdx.glClear(com.badlogic.gdx.graphics.GL20::GL_COLOR_BUFFER_BIT)
+    clear
     @batch.end
   end
 
@@ -137,17 +144,15 @@ class RMAdapter < com.badlogic.gdx.ApplicationAdapter
   end
 
   def run(config = nil)
-    
+    com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, config)
+  end
+
+  def clear
+    com.badlogic.gdx.Gdx.gl.glClearColor(0.0, 0.0, 0.0, 1.0)
+    com.badlogic.gdx.Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20::GL_COLOR_BUFFER_BIT)
   end
 end
 
-class RMConfig
-  def initialize
-    @config = LwjglApplicationConfiguration.new
-  end
+class RMConfig < com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
   
-  def method_missing(name, *args)
-    func = name.to_s.underscore.hungarian
-    if args.empty? then eval "@config.#{func}" else eval "@config.#{func} = #{args.first}" end
-  end
 end
