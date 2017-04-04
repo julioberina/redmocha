@@ -26,133 +26,90 @@ Dir["#{path}/includes/\*.rb"].each do |rb|
   require_relative rb.sub("#{path}/", "").sub(".rb", "")
 end
 
-def rm_import(klass)
-  klass = klass.to_s.split("::")
-  klass[klass.length-1] = klass.last.underscore.split("_").map { |w| w.upcase }.join("_")
-  java_import klass.join("::")
-end
+class RMGame
+  include com.badlogic.gdx.ApplicationListener
+  attr_reader :batch, :font, :shape, :config
 
-def rm_include(interface)
-  interface = interface.to_s.split("::")
-  interface[interface.length-1] = interface.last.underscore.split("_").map { |w| w.upcase.join("_") }
-  include interface.join("::")
-end
-
-class RMScreen
-  include com.badlogic.gdx.Screen
-
-  def initialize(game)
-    @game = game
-  end
-
-  protected
-
-  def clear
-    com.badlogic.gdx.Gdx.gl.glClearColor(0.0, 0.0, 0.0, 1.0)
-    com.badlogic.gdx.Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20::GL_COLOR_BUFFER_BIT)
-  end
-
-  def render(delta)
-    @game.batch.begin
-    clear
-    @game.font.draw(@game.batch, "RedMocha beats white mocha fam!", 20, 20)
-    @game.batch.end
-  end
-
-  def show
-  end
-
-  def hide
-  end
-
-  def dispose
-  end
-
-  def pause
-  end
-
-  def resize(width, height)
-  end
-
-  def resume
-  end
-end
-
-class RMGame < com.badlogic.gdx.Game
-  attr_accessor :batch, :font, :title, :width, :height, :screen
-  
+  # When Application is first created
   def create
     @batch = com.badlogic.gdx.graphics.g2d.SpriteBatch.new
     @font = com.badlogic.gdx.graphics.g2d.BitmapFont.new
-    @screen = RMScreen.new(self)
-    self.set_screen(@screen)
   end
 
+  # Everytime Appication renders itself
   def render
-    super
+    update
+    @batch.begin
+    @shape.begin unless @shape.nil?
+    display
+    @shape.end unless @shape.nil?
+    @batch.end
   end
 
+  # Enable ShapeRenderer
+  def enable_shape_drawer
+    @shape = com.badlogic.gdx.graphics.glutils.ShapeRenderer.new if @shape.nil?
+  end
+
+  # Disable ShapeRenderer
+  def disable_shape_drawer
+    unless @shape.nil?
+      @shape.dispose
+      @shape = nil
+    end
+  end
+
+  # Get rid of resources used by Application
   def dispose
+    @shape.dispose unless @shape.nil?
     @batch.dispose unless @batch.nil?
     @font.dispose unless @font.nil?
   end
 
-  def run(config = nil)
-    if config.nil?
-      com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, @title, @width, @height)
-    else
-      com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, config)
-    end
+  # Run the Application
+  def run
+    com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, @config)
+  end
+
+  # Clear the screen with a certain color and alpha
+  def clear(r, g, b, a)
+    com.badlogic.gdx.Gdx.gl.glClearColor(r, g, b, a)
+    com.badlogic.gdx.Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT)
+  end
+
+  # User updates entities in game
+  def update
+    dispose
+    raise NotImplementedError, "Must implement update method"
+  end
+
+  # User displays entities of game
+  def display
+    dispose
+    raise NotImplementedError, "Must implement display method"
+  end
+
+  # Inherit these only when needed
+
+  # When Application pauses
+  def pause
+  end
+
+  # When Application resumes
+  def resume
+  end
+
+  # Do something when Application is resized to certain dimensions
+  def resize(width, height)
   end
 
   protected
 
-  def initialize(title = "RedMocha Game", width = 800, height = 600)
-    @title = title
-    @width = width
-    @height = height
+  def initialize(title, width, height)
+    @config = com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration.new
+    @config.title = title
+    @config.width = width
+    @config.height = height
   end
 end
 
-class RMAdapter < com.badlogic.gdx.ApplicationAdapter
-  attr_accessor :title, :width, :height
-  
-  def create(title = "RedMocha Game", width = 800, height = 600)
-    @batch = com.badlogic.gdx.graphics.g2d.SpriteBatch.new
-    @title = title
-    @width = width
-    @height = height
-  end
-
-  def pause
-  end
-
-  def dispose
-    @batch.dispose
-  end
-
-  def render
-    @batch.begin
-    clear
-    @batch.end
-  end
-
-  def resize(width, height)
-  end
-
-  def resume
-  end
-
-  def run(config = nil)
-    com.badlogic.gdx.backends.lwjgl.LwjglApplication.new(self, config)
-  end
-
-  def clear
-    com.badlogic.gdx.Gdx.gl.glClearColor(0.0, 0.0, 0.0, 1.0)
-    com.badlogic.gdx.Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20::GL_COLOR_BUFFER_BIT)
-  end
-end
-
-class RMConfig < com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
-  
-end
