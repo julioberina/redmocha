@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "redmocha"
-  s.version = "0.3.8"
+  s.version = "0.3.9"
   s.date = "2017-01-19"
   s.description = "A JRuby wrapper for the Java game framework LibGDX"
   s.summary = "JRuby wrapper for LibGDX"

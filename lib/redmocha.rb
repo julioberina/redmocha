@@ -29,34 +29,32 @@ end
 class RMGame
   include com.badlogic.gdx.ApplicationListener
   attr_reader :batch, :font, :shape, :config
+  attr_writer :shape_type
 
   # When Application is first created
   def create
     @batch = com.badlogic.gdx.graphics.g2d.SpriteBatch.new
     @font = com.badlogic.gdx.graphics.g2d.BitmapFont.new
+    @shape = com.badlogic.gdx.graphics.glutils.ShapeRenderer.new
   end
 
   # Everytime Appication renders itself
   def render
     update
     @batch.begin
-    @shape.begin unless @shape.nil?
+    case @shape_type
+    when :filled
+      @shape.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer::ShapeType::Filled)
+    when :point
+      @shape.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer::ShapeType::Point)
+    when :line
+      @shape.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer::ShapeType::Line)
+    else
+      @shape.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer::ShapeType::Filled)
+    end
     display
     @shape.end unless @shape.nil?
     @batch.end
-  end
-
-  # Enable ShapeRenderer
-  def enable_shape_drawer
-    @shape = com.badlogic.gdx.graphics.glutils.ShapeRenderer.new if @shape.nil?
-  end
-
-  # Disable ShapeRenderer
-  def disable_shape_drawer
-    unless @shape.nil?
-      @shape.dispose
-      @shape = nil
-    end
   end
 
   # Get rid of resources used by Application
